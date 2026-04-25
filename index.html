@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lucky Relay Color Machine</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="machine">
+      <section id="setup" class="setup">
+        <h1>Lucky Relay Color Machine</h1>
+        <p>
+          Paste a long monologue. Start the webcam and mic. Pass the laptop around.
+          Read the scrolling text. The machine turns voice, face motion, missed words,
+          and panic into color. Finish to export the happening as a video.
+        </p>
+
+        <div class="instructions">
+          <h2>How to Use</h2>
+          <ol>
+            <li>Paste the text below. Keep it local. Nothing uploads.</li>
+            <li>Press <b>Start camera + mic</b>, then <b>Begin recording</b>.</li>
+            <li>One person reads while holding the laptop or sitting in front of it.</li>
+            <li>Pass it on whenever it feels right. Use <b>Next reader</b> to mark the switch.</li>
+            <li>Use <b>Random speed</b> when the room needs trouble.</li>
+            <li>Press <b>Finish</b>. The page gives you a phone-shaped MP4 when the browser supports it, otherwise WebM.</li>
+          </ol>
+        </div>
+
+        <label for="scriptText">Monologue text</label>
+        <textarea id="scriptText" spellcheck="false" placeholder="Paste Lucky's monologue, or any long text, here."></textarea>
+
+        <div class="setup-grid">
+          <label>
+            Base speed
+            <input id="speed" type="range" min="80" max="720" value="220">
+            <span id="speedLabel">220 px/s</span>
+          </label>
+          <label class="check">
+            <input id="randomSpeed" type="checkbox">
+            Random speed
+          </label>
+          <label class="check">
+            <input id="speechOn" type="checkbox" checked>
+            Catch omitted words
+          </label>
+        </div>
+
+        <div class="buttons">
+          <button id="startMedia">Start camera + mic</button>
+          <button id="begin" disabled>Begin recording</button>
+        </div>
+        <p id="supportNote" class="note"></p>
+      </section>
+
+      <section id="stage" class="stage hidden">
+        <div class="topbar">
+          <button id="pause">Pause</button>
+          <button id="handoff">Next reader</button>
+          <button id="panic">Random speed now</button>
+          <button id="finish">Finish</button>
+          <label>
+            speed
+            <input id="liveSpeed" type="range" min="80" max="720" value="220">
+          </label>
+          <span id="readerLabel">reader 1</span>
+          <a id="download" class="download hidden">download phone video</a>
+        </div>
+
+        <div id="capture" class="capture">
+          <section class="scroll-panel">
+            <div id="scroller" class="scroller"></div>
+          </section>
+          <section class="camera-panel">
+            <h2>face</h2>
+            <div class="camera-frame">
+              <video id="webcam" autoplay muted playsinline></video>
+              <canvas id="faceOverlay" width="640" height="360"></canvas>
+            </div>
+            <canvas id="visionCanvas" width="320" height="220"></canvas>
+            <div id="faceStatus" class="face-status">faces: waiting</div>
+            <div class="meter-row">
+              <span>mouth-ish</span><meter id="mouthMeter" min="0" max="1"></meter>
+            </div>
+            <div class="meter-row">
+              <span>motion</span><meter id="motionMeter" min="0" max="1"></meter>
+            </div>
+            <div class="meter-row">
+              <span>energy</span><meter id="energyMeter" min="0" max="1"></meter>
+            </div>
+          </section>
+          <section class="color-panel">
+            <h2>color</h2>
+            <canvas id="colorCanvas" width="900" height="620"></canvas>
+            <div id="scoreLine" class="score-line">waiting</div>
+          </section>
+        </div>
+
+        <aside class="matrix">
+          <h2>Scoring Matrix</h2>
+          <table>
+            <thead>
+              <tr><th>Signal</th><th>What it means</th><th>Visual assignment</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Voice volume</td><td>commitment / force</td><td>brightness + bloom</td></tr>
+              <tr><td>Pitch movement</td><td>instability / lift</td><td>hue drift</td></tr>
+              <tr><td>Detected faces</td><td>who is currently in the frame</td><td>face boxes + reader count</td></tr>
+              <tr><td>Face motion</td><td>bodily interruption</td><td>smears + direction</td></tr>
+              <tr><td>Mouth motion</td><td>verbal density</td><td>pulse size</td></tr>
+              <tr><td>Energy heuristic</td><td>calm / bright / intense / overloaded</td><td>visual mood + score label</td></tr>
+              <tr><td>Missed words</td><td>text escaping the reader</td><td>black karaoke scars</td></tr>
+              <tr><td>Random speed</td><td>the machine misbehaving</td><td>hard cuts + hot colors</td></tr>
+              <tr><td>Next reader</td><td>new consciousness</td><td>palette jump + reader mark</td></tr>
+            </tbody>
+          </table>
+        </aside>
+      </section>
+
+      <canvas id="recordCanvas" width="1080" height="1920" class="record-canvas"></canvas>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
