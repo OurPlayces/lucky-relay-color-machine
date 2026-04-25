@@ -17,11 +17,13 @@ const els = {
   panic: document.querySelector("#panic"),
   finish: document.querySelector("#finish"),
   readerLabel: document.querySelector("#readerLabel"),
-  download: document.querySelector("#download"),
+  downloadPhone: document.querySelector("#downloadPhone"),
+  downloadLaptop: document.querySelector("#downloadLaptop"),
   colorCanvas: document.querySelector("#colorCanvas"),
   visionCanvas: document.querySelector("#visionCanvas"),
   faceOverlay: document.querySelector("#faceOverlay"),
   recordCanvas: document.querySelector("#recordCanvas"),
+  laptopRecordCanvas: document.querySelector("#laptopRecordCanvas"),
   mouthMeter: document.querySelector("#mouthMeter"),
   motionMeter: document.querySelector("#motionMeter"),
   energyMeter: document.querySelector("#energyMeter"),
@@ -49,8 +51,10 @@ const state = {
   audioContext: null,
   analyser: null,
   audioData: null,
-  mediaRecorder: null,
-  recordedChunks: [],
+  recorders: [],
+  recordings: {},
+  recordingFormat: null,
+  exportStamp: "",
   recognition: null,
   faceDetector: null,
   faceBoxes: [],
@@ -84,6 +88,7 @@ const colorCtx = els.colorCanvas.getContext("2d", { willReadFrequently: true });
 const visionCtx = els.visionCanvas.getContext("2d", { willReadFrequently: true });
 const faceOverlayCtx = els.faceOverlay.getContext("2d");
 const recordCtx = els.recordCanvas.getContext("2d");
+const laptopRecordCtx = els.laptopRecordCanvas.getContext("2d");
 
 els.scriptText.value = sampleText;
 setSpeed(DEFAULT_SPEED);
@@ -160,7 +165,9 @@ function beginPerformance() {
   state.currentWord = 0;
   state.running = true;
   state.paused = false;
-  state.recordedChunks = [];
+  state.recorders = [];
+  state.recordings = {};
+  state.exportStamp = new Date().toISOString().replace(/[:.]/g, "-");
   state.faceBoxes = [];
   state.faceDetectionDue = 0;
   state.faceDetectionBusy = false;
@@ -174,7 +181,8 @@ function beginPerformance() {
   state.wordEls = [...els.scroller.querySelectorAll(".word")];
   els.setup.classList.add("hidden");
   els.stage.classList.remove("hidden");
-  els.download.classList.add("hidden");
+  els.downloadPhone.classList.add("hidden");
+  els.downloadLaptop.classList.add("hidden");
 
   resizeColorCanvas();
   startSpeech();
@@ -210,7 +218,7 @@ function tick(now) {
 
   updateMissedWords();
   drawColor(now, dt);
-  drawRecordFrame();
+  drawRecordFrames();
   requestAnimationFrame(tick);
 }
 
@@ -530,125 +538,245 @@ function resizeColorCanvas() {
 }
 
 function startRecording() {
-  const stream = els.recordCanvas.captureStream(30);
-  if (state.mediaStream) {
-    state.mediaStream.getAudioTracks().forEach((track) => stream.addTrack(track));
-  }
   const format = preferredVideoFormat();
   state.recordingFormat = format;
-  state.mediaRecorder = format.mimeType
-    ? new MediaRecorder(stream, { mimeType: format.mimeType })
-    : new MediaRecorder(stream);
-  state.mediaRecorder.addEventListener("dataavailable", (event) => {
-    if (event.data.size) state.recordedChunks.push(event.data);
+  state.recordings = {
+    phone: {
+      canvas: els.recordCanvas,
+      ctx: recordCtx,
+      chunks: [],
+      link: els.downloadPhone,
+      label: "phone",
+    },
+    laptop: {
+      canvas: els.laptopRecordCanvas,
+      ctx: laptopRecordCtx,
+      chunks: [],
+      link: els.downloadLaptop,
+      label: "laptop",
+    },
+  };
+
+  state.recorders = Object.values(state.recordings).map((recording) => {
+    const stream = recording.canvas.captureStream(30);
+    if (state.mediaStream) {
+      state.mediaStream.getAudioTracks().forEach((track) => stream.addTrack(track));
+    }
+    const recorder = format.mimeType
+      ? new MediaRecorder(stream, { mimeType: format.mimeType })
+      : new MediaRecorder(stream);
+    recording.recorder = recorder;
+    recorder.addEventListener("dataavailable", (event) => {
+      if (event.data.size) recording.chunks.push(event.data);
+    });
+    recorder.addEventListener("stop", () => exportRecording(recording));
+    recorder.start(1000);
+    return recorder;
   });
-  state.mediaRecorder.addEventListener("stop", exportRecording);
-  state.mediaRecorder.start(1000);
 }
 
-function drawRecordFrame() {
+function drawRecordFrames() {
+  drawPhoneRecordFrame();
+  drawLaptopRecordFrame();
+}
+
+function drawPhoneRecordFrame() {
+  const ctx = recordCtx;
   const w = els.recordCanvas.width;
   const h = els.recordCanvas.height;
-  recordCtx.fillStyle = "#f7f5e9";
-  recordCtx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#f7f5e9";
+  ctx.fillRect(0, 0, w, h);
 
   const textH = 430;
   const faceH = 520;
   const colorY = textH + faceH;
   const colorH = h - colorY;
 
-  recordCtx.fillStyle = "#050505";
-  recordCtx.fillRect(0, 0, w, textH);
-  recordCtx.save();
-  recordCtx.beginPath();
-  recordCtx.rect(0, 0, w, textH);
-  recordCtx.clip();
-  recordCtx.font = "58px Courier New";
-  recordCtx.fillStyle = "#fff";
-  const visibleText = state.words.slice(Math.max(0, state.currentWord - 4), state.currentWord + 22).map((word, idx) => {
-    const absolute = Math.max(0, state.currentWord - 4) + idx;
-    return state.missedWords.has(absolute) ? `[${word.raw}]` : word.raw;
-  }).join(" ");
-  wrapText(recordCtx, visibleText, 38, 95, w - 76, 70, 4);
-  recordCtx.restore();
+  drawRecordedTeleprompter(ctx, 0, 0, w, textH, {
+    fontSize: 58,
+    lineHeight: 70,
+    maxLines: 4,
+    before: 4,
+    after: 22,
+  });
 
-  recordCtx.strokeStyle = "#111";
-  recordCtx.lineWidth = 4;
-  recordCtx.strokeRect(0, 0, w, textH);
-
-  recordCtx.fillStyle = "#fff";
-  recordCtx.fillRect(0, textH, w, faceH);
-  recordCtx.strokeRect(0, textH, w, faceH);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, textH, w, faceH);
+  ctx.strokeRect(0, textH, w, faceH);
   if (els.webcam.videoWidth) {
     const videoW = 720;
     const videoH = 405;
     const videoX = (w - videoW) / 2;
     const videoY = textH + 72;
-    recordCtx.save();
-    recordCtx.translate(videoX + videoW, videoY);
-    recordCtx.scale(-1, 1);
-    recordCtx.drawImage(els.webcam, 0, 0, videoW, videoH);
-    recordCtx.restore();
-    recordCtx.strokeRect(videoX, videoY, videoW, videoH);
-    drawRecordedFaceBoxes(videoX, videoY, videoW, videoH);
+    drawMirroredVideo(ctx, videoX, videoY, videoW, videoH);
+    drawRecordedFaceBoxes(ctx, videoX, videoY, videoW, videoH);
   }
-  recordCtx.fillStyle = "#111";
-  recordCtx.font = "40px Arial";
-  recordCtx.fillText(`face / reader ${state.reader}`, 34, textH + 50);
-  recordCtx.font = "28px Courier New";
-  recordCtx.fillText(`mood ${state.emotionLabel}   faces ${state.faceBoxes.length}   energy ${state.signals.energy.toFixed(2)}`, 34, textH + faceH - 28);
+  ctx.fillStyle = "#111";
+  ctx.font = "40px Arial";
+  ctx.fillText(`face / reader ${state.reader}`, 34, textH + 50);
+  ctx.font = "28px Courier New";
+  ctx.fillText(`mood ${state.emotionLabel}   faces ${state.faceBoxes.length}   energy ${state.signals.energy.toFixed(2)}`, 34, textH + faceH - 28);
 
-  recordCtx.drawImage(els.colorCanvas, 0, colorY, w, colorH);
-  recordCtx.strokeRect(0, colorY, w, colorH);
-  recordCtx.fillStyle = "rgba(255,255,255,0.76)";
-  recordCtx.fillRect(28, h - 70, w - 56, 42);
-  recordCtx.fillStyle = "#111";
-  recordCtx.font = "24px Courier New";
-  recordCtx.fillText(els.scoreLine.textContent.slice(0, 86), 42, h - 40);
+  ctx.drawImage(els.colorCanvas, 0, colorY, w, colorH);
+  ctx.strokeRect(0, colorY, w, colorH);
+  ctx.fillStyle = "rgba(255,255,255,0.76)";
+  ctx.fillRect(28, h - 70, w - 56, 42);
+  ctx.fillStyle = "#111";
+  ctx.font = "24px Courier New";
+  ctx.fillText(els.scoreLine.textContent.slice(0, 86), 42, h - 40);
 }
 
-function drawRecordedFaceBoxes(videoX, videoY, videoW, videoH) {
+function drawLaptopRecordFrame() {
+  const ctx = laptopRecordCtx;
+  const w = els.laptopRecordCanvas.width;
+  const h = els.laptopRecordCanvas.height;
+  const textH = 220;
+  const bottomY = textH;
+  const bottomH = h - textH;
+  const faceW = 430;
+  const colorW = w - faceW;
+
+  ctx.fillStyle = "#f7f5e9";
+  ctx.fillRect(0, 0, w, h);
+  drawRecordedTeleprompter(ctx, 0, 0, w, textH, {
+    fontSize: 44,
+    lineHeight: 54,
+    maxLines: 3,
+    before: 5,
+    after: 20,
+  });
+
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, bottomY, faceW, bottomH);
+  ctx.strokeRect(0, bottomY, faceW, bottomH);
+  if (els.webcam.videoWidth) {
+    const videoW = 380;
+    const videoH = 214;
+    const videoX = 25;
+    const videoY = bottomY + 62;
+    drawMirroredVideo(ctx, videoX, videoY, videoW, videoH);
+    drawRecordedFaceBoxes(ctx, videoX, videoY, videoW, videoH);
+  }
+  ctx.fillStyle = "#111";
+  ctx.font = "26px Arial";
+  ctx.fillText(`face / reader ${state.reader}`, 24, bottomY + 40);
+  ctx.font = "18px Courier New";
+  ctx.fillText(`mood ${state.emotionLabel}`, 24, h - 60);
+  ctx.fillText(`faces ${state.faceBoxes.length}   energy ${state.signals.energy.toFixed(2)}`, 24, h - 34);
+
+  ctx.drawImage(els.colorCanvas, faceW, bottomY, colorW, bottomH);
+  ctx.strokeRect(faceW, bottomY, colorW, bottomH);
+  ctx.fillStyle = "rgba(255,255,255,0.76)";
+  ctx.fillRect(faceW + 18, h - 46, colorW - 36, 28);
+  ctx.fillStyle = "#111";
+  ctx.font = "16px Courier New";
+  ctx.fillText(els.scoreLine.textContent.slice(0, 92), faceW + 30, h - 27);
+}
+
+function drawRecordedTeleprompter(ctx, x, y, width, height, options) {
+  ctx.fillStyle = "#050505";
+  ctx.fillRect(x, y, width, height);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, width, height);
+  ctx.clip();
+  ctx.font = `${options.fontSize}px Courier New`;
+  drawWrappedWordTokens(ctx, visibleWordTokens(options.before, options.after), x + 38, y + options.lineHeight + 25, width - 76, options.lineHeight, options.maxLines);
+  ctx.restore();
+  ctx.strokeStyle = "#111";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(x, y, width, height);
+}
+
+function visibleWordTokens(before, after) {
+  const start = Math.max(0, state.currentWord - before);
+  return state.words.slice(start, state.currentWord + after).map((word, index) => {
+    const absolute = start + index;
+    return {
+      text: state.missedWords.has(absolute) ? `[${word.raw}]` : word.raw,
+      current: absolute === state.currentWord,
+      missed: state.missedWords.has(absolute),
+    };
+  });
+}
+
+function drawWrappedWordTokens(ctx, tokens, x, y, maxWidth, lineHeight, maxLines) {
+  const spaceWidth = ctx.measureText(" ").width;
+  let cursorX = x;
+  let cursorY = y;
+  let line = 0;
+
+  tokens.forEach((token) => {
+    const metrics = ctx.measureText(token.text);
+    const tokenWidth = metrics.width;
+    if (cursorX > x && cursorX + tokenWidth > x + maxWidth) {
+      line += 1;
+      if (line >= maxLines) return;
+      cursorX = x;
+      cursorY += lineHeight;
+    }
+    if (line >= maxLines) return;
+    if (token.current || token.missed) {
+      ctx.fillStyle = token.current ? "#dfff00" : "#ff3b9d";
+      ctx.fillRect(cursorX - 4, cursorY - lineHeight + 10, tokenWidth + 8, lineHeight - 8);
+    }
+    ctx.fillStyle = token.current ? "#111" : token.missed ? "#111" : "#fff";
+    ctx.fillText(token.text, cursorX, cursorY);
+    cursorX += tokenWidth + spaceWidth;
+  });
+}
+
+function drawMirroredVideo(ctx, videoX, videoY, videoW, videoH) {
+  ctx.save();
+  ctx.translate(videoX + videoW, videoY);
+  ctx.scale(-1, 1);
+  ctx.drawImage(els.webcam, 0, 0, videoW, videoH);
+  ctx.restore();
+  ctx.strokeRect(videoX, videoY, videoW, videoH);
+}
+
+function drawRecordedFaceBoxes(ctx, videoX, videoY, videoW, videoH) {
   if (!state.faceBoxes.length || !els.webcam.videoWidth) return;
   const scaleX = videoW / els.webcam.videoWidth;
   const scaleY = videoH / els.webcam.videoHeight;
-  recordCtx.save();
-  recordCtx.lineWidth = 5;
-  recordCtx.strokeStyle = "#dfff00";
-  recordCtx.fillStyle = "rgba(223, 255, 0, 0.18)";
-  recordCtx.font = "24px Courier New";
+  ctx.save();
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "#dfff00";
+  ctx.fillStyle = "rgba(223, 255, 0, 0.18)";
+  ctx.font = "24px Courier New";
   state.faceBoxes.forEach((box, index) => {
     const x = videoX + videoW - (box.x + box.width) * scaleX;
     const y = videoY + box.y * scaleY;
     const width = box.width * scaleX;
     const height = box.height * scaleY;
-    recordCtx.fillRect(x, y, width, height);
-    recordCtx.strokeRect(x, y, width, height);
-    recordCtx.fillStyle = "#dfff00";
-    recordCtx.fillText(`reader ${state.reader}.${index + 1}`, x + 10, Math.max(videoY + 28, y + 28));
-    recordCtx.fillStyle = "rgba(223, 255, 0, 0.18)";
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeRect(x, y, width, height);
+    ctx.fillStyle = "#dfff00";
+    ctx.fillText(`reader ${state.reader}.${index + 1}`, x + 10, Math.max(videoY + 28, y + 28));
+    ctx.fillStyle = "rgba(223, 255, 0, 0.18)";
   });
-  recordCtx.restore();
+  ctx.restore();
 }
 
 function finishPerformance() {
   state.running = false;
   stopSpeech();
-  if (state.mediaRecorder && state.mediaRecorder.state !== "inactive") {
-    state.mediaRecorder.stop();
-  }
+  state.recorders.forEach((recorder) => {
+    if (recorder.state !== "inactive") recorder.stop();
+  });
   state.mediaStream?.getTracks().forEach((track) => track.stop());
   els.finish.disabled = true;
 }
 
-function exportRecording() {
-  const type = state.mediaRecorder?.mimeType || state.recordingFormat?.mimeType || "video/webm";
-  const blob = new Blob(state.recordedChunks, { type });
+function exportRecording(recording) {
+  const type = recording.recorder?.mimeType || state.recordingFormat?.mimeType || "video/webm";
+  const blob = new Blob(recording.chunks, { type });
   const url = URL.createObjectURL(blob);
-  els.download.href = url;
   const ext = state.recordingFormat?.extension || (type.includes("mp4") ? "mp4" : "webm");
-  els.download.download = `lucky-relay-phone-${new Date().toISOString().replace(/[:.]/g, "-")}.${ext}`;
-  els.download.textContent = `download ${ext.toUpperCase()} phone video`;
-  els.download.classList.remove("hidden");
+  recording.link.href = url;
+  recording.link.download = `lucky-relay-${recording.label}-${state.exportStamp}.${ext}`;
+  recording.link.textContent = `download ${ext.toUpperCase()} ${recording.label} video`;
+  recording.link.classList.remove("hidden");
   els.finish.disabled = false;
 }
 
