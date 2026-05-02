@@ -34,6 +34,446 @@ const els = {
 const sampleText = `Given the existence as uttered forth in the public works of Puncher and Wattmann of a personal God quaquaquaqua with white beard quaquaquaqua outside time without extension who from the heights of divine apathia divine athambia divine aphasia loves us dearly with some exceptions for reasons unknown but time will tell.`;
 const DEFAULT_SPEED = 220;
 
+// =========================================================================
+// READERS roster — performance order. Profiles load dynamically from
+// analysis/song_profiles/<profileKey>.json. profileKey === null means the
+// reader has no song; DEFAULT_PROFILE_KNOBS is used. "Next reader" walks
+// through this list in order, wrapping after the last.
+// =========================================================================
+const DEFAULT_PROFILE_KNOBS = {
+  base_palette: {
+    primary: { hue: 200, sat: 50, light: 50 },
+    accent:  { hue: 30,  sat: 70, light: 60 },
+  },
+  palette_drift_range: 35,
+  brightness_curve: "linear",
+  pulse_rate_hz: 1.0,
+  motion_smear_decay: 0.90,
+  panic_palette:    { hue: 0,   sat: 90, light: 50 },
+  missed_word_scar: { hue: 200, sat: 40, light: 14 },
+  bridge_palette:   null,
+  bridge_trigger:   null,
+};
+
+const READERS = [
+  { reader: "wayne",       profileKey: "wayne",       song_title: "Happiness Is Here and Now",                    artist: "Plum Village" },
+  { reader: "chris",       profileKey: "chris",       song_title: "NDP 2024 Theme – Not Alone",                   artist: "NDPeeps" },
+  { reader: "hannah",      profileKey: "hannah",      song_title: "A Thousand Years",                             artist: "John Michael Howell, JVKE & ZVC" },
+  { reader: "caleb",       profileKey: "caleb",       song_title: "Red Wine Supernova",                           artist: "Chappell Roan" },
+  { reader: "shashvat",    profileKey: "shashvat",    song_title: "Banjo",                                        artist: "Rascal Flatts" },
+  { reader: "zsmj",        profileKey: "zsmj",        song_title: "當想你成為習慣",                                 artist: "KeyKey" },
+  { reader: "joy",         profileKey: "joy",         song_title: "A Walk to Remember",                           artist: "Vulfpeck" },
+  { reader: "ebb",         profileKey: "ebb",         song_title: "願你愛自己，像我愛你一樣",                          artist: "Crispy 脆樂團" },
+  { reader: "abigail",     profileKey: "abigail",     song_title: "한도초과 (HANDO-CHOGUA)",                          artist: "DAESUNG" },
+  { reader: "khizer",      profileKey: "khizer",      song_title: "If He",                                        artist: "Mkgee" },
+  { reader: "naomi",       profileKey: "naomi",       song_title: "Bad Man",                                      artist: "Fightmaster" },
+  { reader: "serene",      profileKey: "serene",      song_title: "I Lived",                                      artist: "OneRepublic" },
+  { reader: "mitchell",    profileKey: "mitchell",    song_title: "Queen of the Night aria",                      artist: "Mozart / Diana Damrau" },
+  { reader: "sowmya",      profileKey: null,          song_title: null,                                           artist: null },
+  { reader: "lee tom",     profileKey: "lee_tom",     song_title: "Piano Concerto No. 3 in D Minor, Op. 30: I",   artist: "Rachmaninoff" },
+  { reader: "bonnie",      profileKey: "bonnie",      song_title: "Latch",                                        artist: "Disclosure ft. Sam Smith" },
+  { reader: "wan qin",     profileKey: "wan_qin",     song_title: "HAPPEN (헤픈 우연)",                             artist: "Heize" },
+  { reader: "amelia",      profileKey: null,          song_title: null,                                           artist: null },
+  { reader: "kester",      profileKey: "kester",      song_title: "Hush",                                         artist: "NeoC" },
+  { reader: "drew",        profileKey: "drew",        song_title: "Everything You Do",                            artist: "The Happy Fits" },
+  { reader: "theo",        profileKey: "theo",        song_title: "Dracula (JENNIE Remix)",                       artist: "Tame Impala × JENNIE" },
+  { reader: "wil",         profileKey: null,          song_title: null,                                           artist: null },
+  { reader: "enokii",      profileKey: "enokii",      song_title: "Tonight",                                      artist: "SPICA" },
+  { reader: "carlos",      profileKey: null,          song_title: null,                                           artist: null },
+  { reader: "clotho, nep", profileKey: "clotho_nep",  song_title: "How Music Works (instrumental)",               artist: "Marcin" },
+  { reader: "damien",      profileKey: "damien",      song_title: "I Should've Known",                            artist: "INOHA" },
+  { reader: "gena",        profileKey: "gena",        song_title: "Bōkyō",                                        artist: "Hako Yamasaki" },
+  { reader: "sid",         profileKey: "sid",         song_title: "How Much I Love You, Baby",                    artist: "Satellite Lovers" },
+];
+
+// Embedded profile knobs (baked from analysis/song_profiles/*.json by
+// /tmp/bake_profiles.py). Inlined so the page works opened directly via
+// file:// — fetch() is blocked under that origin. Re-bake whenever a song
+// profile changes.
+const EMBEDDED_PROFILE_KNOBS = {
+  wayne: {
+    base_palette: {
+      primary: { hue: 49, sat: 45, light: 47 },
+      accent:  { hue: 354, sat: 70, light: 59 },
+    },
+    palette_drift_range: 48.0,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.657,
+    motion_smear_decay: 0.935,
+    panic_palette:    { hue: 355, sat: 80, light: 54 },
+    missed_word_scar: { hue: 49, sat: 35, light: 14 },
+    bridge_palette:   null,
+    bridge_trigger:   null,
+  },
+  chris: {
+    base_palette: {
+      primary: { hue: 324, sat: 58, light: 52 },
+      accent:  { hue: 328, sat: 83, light: 64 },
+    },
+    palette_drift_range: 52.8,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.657,
+    motion_smear_decay: 0.93,
+    panic_palette:    { hue: 333, sat: 88, light: 59 },
+    missed_word_scar: { hue: 324, sat: 48, light: 14 },
+    bridge_palette:   { hue: 264, sat: 38, light: 62 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  hannah: {
+    base_palette: {
+      primary: { hue: 306, sat: 54, light: 52 },
+      accent:  { hue: 323, sat: 79, light: 64 },
+    },
+    palette_drift_range: 50.6,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.872,
+    motion_smear_decay: 0.928,
+    panic_palette:    { hue: 329, sat: 84, light: 59 },
+    missed_word_scar: { hue: 306, sat: 44, light: 14 },
+    bridge_palette:   { hue: 206, sat: 39, light: 47 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  caleb: {
+    base_palette: {
+      primary: { hue: 333, sat: 60, light: 54 },
+      accent:  { hue: 331, sat: 85, light: 66 },
+    },
+    palette_drift_range: 50.7,
+    brightness_curve: "linear",
+    pulse_rate_hz: 2.05,
+    motion_smear_decay: 0.925,
+    panic_palette:    { hue: 335, sat: 90, light: 61 },
+    missed_word_scar: { hue: 333, sat: 50, light: 14 },
+    bridge_palette:   { hue: 293, sat: 45, light: 54 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  shashvat: {
+    base_palette: {
+      primary: { hue: 49, sat: 46, light: 48 },
+      accent:  { hue: 354, sat: 71, light: 60 },
+    },
+    palette_drift_range: 50.8,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.723,
+    motion_smear_decay: 0.929,
+    panic_palette:    { hue: 355, sat: 80, light: 55 },
+    missed_word_scar: { hue: 49, sat: 36, light: 14 },
+    bridge_palette:   { hue: 309, sat: 31, light: 43 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  zsmj: {
+    base_palette: {
+      primary: { hue: 90, sat: 64, light: 52 },
+      accent:  { hue: 6, sat: 89, light: 64 },
+    },
+    palette_drift_range: 49.5,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.267,
+    motion_smear_decay: 0.894,
+    panic_palette:    { hue: 5, sat: 94, light: 59 },
+    missed_word_scar: { hue: 90, sat: 54, light: 14 },
+    bridge_palette:   { hue: 45, sat: 49, light: 57 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  joy: {
+    base_palette: {
+      primary: { hue: 287, sat: 71, light: 49 },
+      accent:  { hue: 317, sat: 95, light: 61 },
+    },
+    palette_drift_range: 52.5,
+    brightness_curve: "explosive",
+    pulse_rate_hz: 1.197,
+    motion_smear_decay: 0.871,
+    panic_palette:    { hue: 323, sat: 99, light: 56 },
+    missed_word_scar: { hue: 287, sat: 61, light: 14 },
+    bridge_palette:   { hue: 187, sat: 56, light: 44 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  ebb: {
+    base_palette: {
+      primary: { hue: 68, sat: 57, light: 52 },
+      accent:  { hue: 359, sat: 82, light: 64 },
+    },
+    palette_drift_range: 46.3,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.435,
+    motion_smear_decay: 0.935,
+    panic_palette:    { hue: 359, sat: 87, light: 59 },
+    missed_word_scar: { hue: 68, sat: 47, light: 14 },
+    bridge_palette:   { hue: 328, sat: 42, light: 47 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  abigail: {
+    base_palette: {
+      primary: { hue: 60, sat: 61, light: 51 },
+      accent:  { hue: 357, sat: 86, light: 63 },
+    },
+    palette_drift_range: 50.9,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.197,
+    motion_smear_decay: 0.895,
+    panic_palette:    { hue: 357, sat: 91, light: 58 },
+    missed_word_scar: { hue: 60, sat: 51, light: 14 },
+    bridge_palette:   { hue: 15, sat: 46, light: 56 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  khizer: {
+    base_palette: {
+      primary: { hue: 0, sat: 56, light: 52 },
+      accent:  { hue: 339, sat: 81, light: 64 },
+    },
+    palette_drift_range: 49.4,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.485,
+    motion_smear_decay: 0.934,
+    panic_palette:    { hue: 342, sat: 86, light: 59 },
+    missed_word_scar: { hue: 0, sat: 46, light: 14 },
+    bridge_palette:   { hue: 320, sat: 41, light: 52 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  naomi: {
+    base_palette: {
+      primary: { hue: 32, sat: 45, light: 47 },
+      accent:  { hue: 349, sat: 70, light: 59 },
+    },
+    palette_drift_range: 48.0,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.435,
+    motion_smear_decay: 0.933,
+    panic_palette:    { hue: 351, sat: 80, light: 54 },
+    missed_word_scar: { hue: 32, sat: 35, light: 14 },
+    bridge_palette:   { hue: 352, sat: 30, light: 47 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  serene: {
+    base_palette: {
+      primary: { hue: 314, sat: 71, light: 48 },
+      accent:  { hue: 325, sat: 95, light: 60 },
+    },
+    palette_drift_range: 51.2,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.958,
+    motion_smear_decay: 0.877,
+    panic_palette:    { hue: 330, sat: 99, light: 55 },
+    missed_word_scar: { hue: 314, sat: 61, light: 14 },
+    bridge_palette:   { hue: 274, sat: 56, light: 48 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  mitchell: {
+    base_palette: {
+      primary: { hue: 150, sat: 63, light: 51 },
+      accent:  { hue: 24, sat: 88, light: 63 },
+    },
+    palette_drift_range: 50.6,
+    brightness_curve: "linear",
+    pulse_rate_hz: 2.267,
+    motion_smear_decay: 0.897,
+    panic_palette:    { hue: 20, sat: 93, light: 58 },
+    missed_word_scar: { hue: 150, sat: 53, light: 14 },
+    bridge_palette:   { hue: 110, sat: 48, light: 51 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  lee_tom: {
+    base_palette: {
+      primary: { hue: 60, sat: 59, light: 49 },
+      accent:  { hue: 357, sat: 84, light: 61 },
+    },
+    palette_drift_range: 48.4,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.197,
+    motion_smear_decay: 0.901,
+    panic_palette:    { hue: 357, sat: 89, light: 56 },
+    missed_word_scar: { hue: 60, sat: 49, light: 14 },
+    bridge_palette:   { hue: 320, sat: 44, light: 44 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  bonnie: {
+    base_palette: {
+      primary: { hue: 81, sat: 55, light: 53 },
+      accent:  { hue: 3, sat: 80, light: 65 },
+    },
+    palette_drift_range: 50.7,
+    brightness_curve: "linear",
+    pulse_rate_hz: 2.05,
+    motion_smear_decay: 0.926,
+    panic_palette:    { hue: 3, sat: 85, light: 60 },
+    missed_word_scar: { hue: 81, sat: 45, light: 14 },
+    bridge_palette:   { hue: 41, sat: 40, light: 53 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  wan_qin: {
+    base_palette: {
+      primary: { hue: 333, sat: 55, light: 52 },
+      accent:  { hue: 331, sat: 80, light: 64 },
+    },
+    palette_drift_range: 50.4,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.872,
+    motion_smear_decay: 0.929,
+    panic_palette:    { hue: 335, sat: 85, light: 59 },
+    missed_word_scar: { hue: 333, sat: 45, light: 14 },
+    bridge_palette:   { hue: 288, sat: 40, light: 57 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  kester: {
+    base_palette: {
+      primary: { hue: 27, sat: 57, light: 51 },
+      accent:  { hue: 347, sat: 82, light: 63 },
+    },
+    palette_drift_range: 46.7,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.538,
+    motion_smear_decay: 0.935,
+    panic_palette:    { hue: 349, sat: 87, light: 58 },
+    missed_word_scar: { hue: 27, sat: 47, light: 14 },
+    bridge_palette:   { hue: 342, sat: 42, light: 56 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  drew: {
+    base_palette: {
+      primary: { hue: 68, sat: 60, light: 55 },
+      accent:  { hue: 359, sat: 85, light: 67 },
+    },
+    palette_drift_range: 43.3,
+    brightness_curve: "explosive",
+    pulse_rate_hz: 1.267,
+    motion_smear_decay: 0.92,
+    panic_palette:    { hue: 359, sat: 90, light: 62 },
+    missed_word_scar: { hue: 68, sat: 50, light: 14 },
+    bridge_palette:   { hue: 23, sat: 45, light: 60 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  theo: {
+    base_palette: {
+      primary: { hue: 54, sat: 59, light: 53 },
+      accent:  { hue: 355, sat: 84, light: 65 },
+    },
+    palette_drift_range: 49.7,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.958,
+    motion_smear_decay: 0.927,
+    panic_palette:    { hue: 356, sat: 89, light: 60 },
+    missed_word_scar: { hue: 54, sat: 49, light: 14 },
+    bridge_palette:   { hue: 314, sat: 44, light: 48 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  enokii: {
+    base_palette: {
+      primary: { hue: 81, sat: 59, light: 54 },
+      accent:  { hue: 3, sat: 84, light: 66 },
+    },
+    palette_drift_range: 52.1,
+    brightness_curve: "linear",
+    pulse_rate_hz: 2.153,
+    motion_smear_decay: 0.923,
+    panic_palette:    { hue: 3, sat: 89, light: 61 },
+    missed_word_scar: { hue: 81, sat: 49, light: 14 },
+    bridge_palette:   { hue: 41, sat: 44, light: 54 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  clotho_nep: {
+    base_palette: {
+      primary: { hue: 82, sat: 43, light: 48 },
+      accent:  { hue: 4, sat: 70, light: 60 },
+    },
+    palette_drift_range: 55.8,
+    brightness_curve: "explosive",
+    pulse_rate_hz: 2.153,
+    motion_smear_decay: 0.922,
+    panic_palette:    { hue: 3, sat: 80, light: 55 },
+    missed_word_scar: { hue: 82, sat: 33, light: 14 },
+    bridge_palette:   { hue: 22, sat: 25, light: 58 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  damien: {
+    base_palette: {
+      primary: { hue: 35, sat: 71, light: 48 },
+      accent:  { hue: 350, sat: 95, light: 60 },
+    },
+    palette_drift_range: 46.4,
+    brightness_curve: "linear",
+    pulse_rate_hz: 1.872,
+    motion_smear_decay: 0.88,
+    panic_palette:    { hue: 352, sat: 99, light: 55 },
+    missed_word_scar: { hue: 35, sat: 61, light: 14 },
+    bridge_palette:   null,
+    bridge_trigger:   null,
+  },
+  gena: {
+    base_palette: {
+      primary: { hue: 131, sat: 44, light: 49 },
+      accent:  { hue: 18, sat: 70, light: 61 },
+    },
+    palette_drift_range: 47.7,
+    brightness_curve: "explosive",
+    pulse_rate_hz: 1.346,
+    motion_smear_decay: 0.921,
+    panic_palette:    { hue: 15, sat: 80, light: 56 },
+    missed_word_scar: { hue: 131, sat: 34, light: 14 },
+    bridge_palette:   { hue: 31, sat: 29, light: 44 },
+    bridge_trigger:   "sustained-quiet",
+  },
+  sid: {
+    base_palette: {
+      primary: { hue: 27, sat: 54, light: 52 },
+      accent:  { hue: 347, sat: 79, light: 64 },
+    },
+    palette_drift_range: 50.8,
+    brightness_curve: "linear",
+    pulse_rate_hz: 2.05,
+    motion_smear_decay: 0.926,
+    panic_palette:    { hue: 349, sat: 84, light: 59 },
+    missed_word_scar: { hue: 27, sat: 44, light: 14 },
+    bridge_palette:   { hue: 287, sat: 39, light: 47 },
+    bridge_trigger:   "sustained-quiet",
+  },
+};
+
+console.log(`[colour-relay] profiles embedded: ${Object.keys(EMBEDDED_PROFILE_KNOBS).length}`);
+
+// =========================================================================
+// Profile helpers
+// =========================================================================
+function currentProfile() {
+  const r = READERS[state.readerIdx];
+  const knobs = (r.profileKey && EMBEDDED_PROFILE_KNOBS[r.profileKey]) || DEFAULT_PROFILE_KNOBS;
+  return { reader: r.reader, song_title: r.song_title, artist: r.artist, knobs };
+}
+
+function blendHsl(a, b, w) {
+  const diff = ((b.hue - a.hue + 540) % 360) - 180;
+  return {
+    hue: (a.hue + diff * w + 360) % 360,
+    sat: a.sat + (b.sat - a.sat) * w,
+    light: a.light + (b.light - a.light) * w,
+  };
+}
+
+function applyBrightnessCurve(volume, curve) {
+  if (curve === "soft") return Math.pow(volume, 1.6);
+  if (curve === "explosive") return Math.pow(volume, 0.6);
+  return volume; // linear
+}
+
+// Pick the palette the visuals should be approaching this frame.
+// Order: panic > bridge (sustained quiet) > primary→accent blend (peaks).
+function pickTargetPalette(profile, dt) {
+  const k = profile.knobs;
+
+  // Bridge: sustained-quiet detector
+  const isQuiet = state.signals.volume < 0.07 && state.signals.energy < 0.18;
+  if (isQuiet) state.quietTime += dt;
+  else state.quietTime = Math.max(0, state.quietTime - dt * 2);
+
+  if (state.signals.panic > 0.4) return k.panic_palette;
+  if (k.bridge_palette && state.quietTime > 2.5) return k.bridge_palette;
+
+  const peak = Math.max(state.signals.volume * 1.4, state.signals.pitchFlux);
+  const accentWeight = peak > 0.45 ? Math.min(1, (peak - 0.45) * 2.0) : 0;
+  if (accentWeight === 0) return k.base_palette.primary;
+  return blendHsl(k.base_palette.primary, k.base_palette.accent, accentWeight);
+}
+
 const state = {
   words: [],
   wordEls: [],
@@ -45,6 +485,8 @@ const state = {
   spokenWords: [],
   missedWords: new Set(),
   reader: 1,
+  readerIdx: 0,
+  quietTime: 0,
   running: false,
   paused: false,
   mediaStream: null,
@@ -108,6 +550,17 @@ els.pause.addEventListener("click", togglePause);
 els.handoff.addEventListener("click", markHandoff);
 els.panic.addEventListener("click", () => triggerRandomSpeed(2600));
 els.finish.addEventListener("click", finishPerformance);
+
+// Spacebar = Next reader, but only while the relay is running and not when
+// the focused element is an input/textarea (so typing the monologue doesn't fire).
+window.addEventListener("keydown", (e) => {
+  if (e.code !== "Space" && e.key !== " ") return;
+  if (!state.running) return;
+  const t = e.target;
+  if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+  e.preventDefault();
+  markHandoff();
+});
 
 showSupportNotes();
 
@@ -174,6 +627,14 @@ function beginPerformance() {
   state.emotionLabel = "waiting";
   state.lastTime = performance.now();
   state.speed = Number(els.speed.value) || DEFAULT_SPEED;
+  state.readerIdx = 0;
+  state.reader = 1;
+  state.quietTime = 0;
+  const initial = currentProfile().knobs.base_palette.primary;
+  state.palette.hue = initial.hue;
+  state.palette.sat = initial.sat;
+  state.palette.light = initial.light;
+  els.readerLabel.textContent = currentProfile().reader;
 
   els.scroller.innerHTML = state.words
     .map((word, index) => `<span class="word" data-index="${index}">${escapeHtml(word.raw)}</span>`)
@@ -361,7 +822,7 @@ function updateFaceStatus() {
   const count = state.faceBoxes.length;
   const label = count === 1 ? "face" : "faces";
   const mode = state.faceMode === "native" ? "detected" : "estimated";
-  els.faceStatus.textContent = `${label}: ${count} ${mode} / reader ${state.reader} / mood ${state.emotionLabel}`;
+  els.faceStatus.textContent = `${label}: ${count} ${mode} / reader ${currentProfile().reader} / mood ${state.emotionLabel}`;
 }
 
 function drawFaceOverlay() {
@@ -388,7 +849,7 @@ function drawFaceOverlay() {
     faceOverlayCtx.fillRect(x, y, width, height);
     faceOverlayCtx.strokeRect(x, y, width, height);
     faceOverlayCtx.fillStyle = "#dfff00";
-    faceOverlayCtx.fillText(`reader ${state.reader}.${index + 1}`, x + 8, Math.max(22, y + 22));
+    faceOverlayCtx.fillText(`${currentProfile().reader}.${index + 1}`, x + 8, Math.max(22, y + 22));
     faceOverlayCtx.fillStyle = "rgba(223, 255, 0, 0.16)";
   });
 }
@@ -467,11 +928,12 @@ function activeSpeed(now) {
 }
 
 function markHandoff() {
-  state.reader += 1;
+  state.readerIdx = (state.readerIdx + 1) % READERS.length;
+  state.reader = state.readerIdx + 1;
+  state.quietTime = 0;
   state.signals.handoff = 1;
   state.handoffFlash = 1;
-  state.palette.hue = (state.palette.hue + 81 + Math.random() * 72) % 360;
-  els.readerLabel.textContent = `reader ${state.reader}`;
+  els.readerLabel.textContent = currentProfile().reader;
 }
 
 function togglePause() {
@@ -483,12 +945,26 @@ function drawColor(now, dt) {
   const { volume, pitchFlux, motion, mouth, missed, panic, handoff, energy, faces } = state.signals;
   const w = els.colorCanvas.width;
   const h = els.colorCanvas.height;
-  const hueShift = pitchFlux * 60 + motion * 24 + panic * 150 + handoff * 200 + energy * 18;
-  state.palette.hue = (state.palette.hue + hueShift * dt * 2.3) % 360;
-  state.palette.sat = 68 + volume * 24 + energy * 10;
-  state.palette.light = 38 + volume * 28 + energy * 14 + panic * 16;
+  const profile = currentProfile();
+  const k = profile.knobs;
 
-  colorCtx.fillStyle = `hsla(${state.palette.hue}, ${state.palette.sat}%, ${state.palette.light}%, ${0.04 + volume * 0.06 + energy * 0.04})`;
+  // Pick the palette this frame should be approaching (panic > bridge > primary→accent blend).
+  const target = pickTargetPalette(profile, dt);
+
+  // Hue: pull toward target + signal-driven drift, scaled by drift_range.
+  const driftScale = k.palette_drift_range / 35;
+  const hueShift = pitchFlux * 60 + motion * 24 + panic * 150 + handoff * 200 + energy * 18;
+  const hueDiff = ((target.hue - state.palette.hue + 540) % 360) - 180;
+  state.palette.hue = (state.palette.hue + hueDiff * dt * 1.5 + hueShift * dt * driftScale * 0.8 + 360) % 360;
+
+  // Sat/light: target sets baseline, signals modulate on top, brightness curve shapes voice→light.
+  const lightDrive = applyBrightnessCurve(volume, k.brightness_curve);
+  state.palette.sat = clamp(target.sat + volume * 22 + energy * 8, 15, 100);
+  state.palette.light = clamp(target.light + lightDrive * 22 + energy * 10 + panic * 14, 15, 80);
+
+  // Per-frame overdraw — motion_smear_decay controls persistence (lower decay = snappier).
+  const overdrawAlpha = (1 - k.motion_smear_decay) + volume * 0.05 + energy * 0.03;
+  colorCtx.fillStyle = `hsla(${state.palette.hue}, ${state.palette.sat}%, ${state.palette.light}%, ${overdrawAlpha})`;
   colorCtx.fillRect(0, 0, w, h);
 
   const pulses = 2 + Math.round(mouth * 8 + panic * 10 + faces * 3);
@@ -502,15 +978,18 @@ function drawColor(now, dt) {
     colorCtx.fill();
   }
 
+  // Smears now reference the accent palette family (was hard-coded +120 rotation).
+  const accent = k.base_palette.accent;
   const smearCount = Math.round(2 + motion * 24 + energy * 8);
   for (let i = 0; i < smearCount; i += 1) {
-    colorCtx.fillStyle = `hsla(${(state.palette.hue + 120 + i * 5) % 360}, 95%, 55%, ${0.04 + motion * 0.12})`;
+    colorCtx.fillStyle = `hsla(${(accent.hue + i * 5) % 360}, ${accent.sat}%, ${accent.light}%, ${0.04 + motion * 0.12})`;
     const y = Math.random() * h;
     colorCtx.fillRect(Math.random() * w - w * 0.2, y, w * (0.12 + motion * 0.8), 4 + motion * 42);
   }
 
   if (missed > 0) {
-    colorCtx.fillStyle = `rgba(0, 0, 0, ${0.08 + missed * 0.32})`;
+    const scar = k.missed_word_scar;
+    colorCtx.fillStyle = `hsla(${scar.hue}, ${scar.sat}%, ${scar.light}%, ${0.18 + missed * 0.40})`;
     for (let i = 0; i < 1 + missed * 9; i += 1) {
       colorCtx.fillRect(Math.random() * w, Math.random() * h, 8 + missed * 80, 2 + missed * 18);
     }
@@ -521,12 +1000,12 @@ function drawColor(now, dt) {
     colorCtx.fillRect(0, 0, w, h);
     colorCtx.fillStyle = "#000";
     colorCtx.font = "48px Arial";
-    colorCtx.fillText(`reader ${state.reader}`, 30, 70);
+    colorCtx.fillText(currentProfile().reader, 30, 70);
     state.handoffFlash *= 0.86;
   }
 
   els.scoreLine.textContent =
-    `reader=${state.reader} faces=${state.faceBoxes.length} mood=${state.emotionLabel} volume=${volume.toFixed(2)} pitch=${pitchFlux.toFixed(2)} motion=${motion.toFixed(2)} energy=${energy.toFixed(2)} missed=${state.missedWords.size}`;
+    `reader=${currentProfile().reader} faces=${state.faceBoxes.length} mood=${state.emotionLabel} volume=${volume.toFixed(2)} pitch=${pitchFlux.toFixed(2)} motion=${motion.toFixed(2)} energy=${energy.toFixed(2)} missed=${state.missedWords.size} quiet=${state.quietTime.toFixed(1)}`;
 }
 
 function resizeColorCanvas() {
@@ -613,7 +1092,7 @@ function drawPhoneRecordFrame() {
   }
   ctx.fillStyle = "#111";
   ctx.font = "40px Arial";
-  ctx.fillText(`face / reader ${state.reader}`, 34, textH + 50);
+  ctx.fillText(`face / reader ${currentProfile().reader}`, 34, textH + 50);
   ctx.font = "28px Courier New";
   ctx.fillText(`mood ${state.emotionLabel}   faces ${state.faceBoxes.length}   energy ${state.signals.energy.toFixed(2)}`, 34, textH + faceH - 28);
 
@@ -659,7 +1138,7 @@ function drawLaptopRecordFrame() {
   }
   ctx.fillStyle = "#111";
   ctx.font = "26px Arial";
-  ctx.fillText(`face / reader ${state.reader}`, 24, bottomY + 40);
+  ctx.fillText(`face / reader ${currentProfile().reader}`, 24, bottomY + 40);
   ctx.font = "18px Courier New";
   ctx.fillText(`mood ${state.emotionLabel}`, 24, h - 60);
   ctx.fillText(`faces ${state.faceBoxes.length}   energy ${state.signals.energy.toFixed(2)}`, 24, h - 34);
@@ -752,7 +1231,7 @@ function drawRecordedFaceBoxes(ctx, videoX, videoY, videoW, videoH) {
     ctx.fillRect(x, y, width, height);
     ctx.strokeRect(x, y, width, height);
     ctx.fillStyle = "#dfff00";
-    ctx.fillText(`reader ${state.reader}.${index + 1}`, x + 10, Math.max(videoY + 28, y + 28));
+    ctx.fillText(`${currentProfile().reader}.${index + 1}`, x + 10, Math.max(videoY + 28, y + 28));
     ctx.fillStyle = "rgba(223, 255, 0, 0.18)";
   });
   ctx.restore();

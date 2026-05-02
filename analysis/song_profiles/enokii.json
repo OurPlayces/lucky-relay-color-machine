@@ -1,0 +1,74 @@
+{
+  "reader": "enokii",
+  "song_title": "Tonight",
+  "artist": "SPICA",
+  "genre_tags": [
+    "alt-pop",
+    "r&b",
+    "dream-pop"
+  ],
+  "song_features": {
+    "bpm": 129.2,
+    "key": "F",
+    "mode": "major",
+    "energy": 0.631,
+    "valence": 0.569,
+    "duration_sec": 222.77
+  },
+  "derivation": {
+    "genre_cluster": "muted_warm",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "rms_drop_only",
+      "section": {
+        "start_sec": 138.76,
+        "end_sec": 156.62,
+        "duration_sec": 17.86,
+        "key": "F",
+        "mode": "major",
+        "key_confidence": 0.892,
+        "rms": 0.2326,
+        "spectral_centroid_hz": 2243.7
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 81,
+        "sat": 59,
+        "light": 54
+      },
+      "accent": {
+        "hue": 3,
+        "sat": 84,
+        "light": 66
+      }
+    },
+    "palette_drift_range": 52.1,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 2.153,
+    "motion_smear_decay": 0.923,
+    "panic_palette": {
+      "hue": 3,
+      "sat": 89,
+      "light": 61
+    },
+    "missed_word_scar": {
+      "hue": 81,
+      "sat": 49,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 41,
+      "sat": 44,
+      "light": 54
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

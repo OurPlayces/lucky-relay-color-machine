@@ -1,0 +1,74 @@
+{
+  "reader": "theo",
+  "song_title": "Dracula (JENNIE Remix)",
+  "artist": "Tame Impala, JENNIE",
+  "genre_tags": [
+    "alt-pop",
+    "indietronica",
+    "dream-pop"
+  ],
+  "song_features": {
+    "bpm": 117.5,
+    "key": "D#",
+    "mode": "major",
+    "energy": 0.55,
+    "valence": 0.545,
+    "duration_sec": 210.35
+  },
+  "derivation": {
+    "genre_cluster": "muted_warm",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "mode_flip_to_minor",
+      "section": {
+        "start_sec": 8.82,
+        "end_sec": 111.46,
+        "duration_sec": 102.64,
+        "key": "G",
+        "mode": "minor",
+        "key_confidence": 0.434,
+        "rms": 0.3622,
+        "spectral_centroid_hz": 2116.0
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 54,
+        "sat": 59,
+        "light": 53
+      },
+      "accent": {
+        "hue": 355,
+        "sat": 84,
+        "light": 65
+      }
+    },
+    "palette_drift_range": 49.7,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.958,
+    "motion_smear_decay": 0.927,
+    "panic_palette": {
+      "hue": 356,
+      "sat": 89,
+      "light": 60
+    },
+    "missed_word_scar": {
+      "hue": 54,
+      "sat": 49,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 314,
+      "sat": 44,
+      "light": 48
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

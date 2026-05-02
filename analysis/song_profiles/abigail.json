@@ -1,0 +1,70 @@
+{
+  "reader": "abigail",
+  "song_title": "\ud55c\ub3c4\ucd08\uacfc (HANDO-CHOGUA)",
+  "artist": "DAESUNG",
+  "genre_tags": [],
+  "song_features": {
+    "bpm": 143.6,
+    "key": "D",
+    "mode": "minor",
+    "energy": 0.609,
+    "valence": 0.454,
+    "duration_sec": 294.73
+  },
+  "derivation": {
+    "genre_cluster": "default",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "v_chord_shift",
+      "section": {
+        "start_sec": 0.0,
+        "end_sec": 71.49,
+        "duration_sec": 71.49,
+        "key": "A",
+        "mode": "minor",
+        "key_confidence": 0.793,
+        "rms": 0.1,
+        "spectral_centroid_hz": 1864.3
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 60,
+        "sat": 61,
+        "light": 51
+      },
+      "accent": {
+        "hue": 357,
+        "sat": 86,
+        "light": 63
+      }
+    },
+    "palette_drift_range": 50.9,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.197,
+    "motion_smear_decay": 0.895,
+    "panic_palette": {
+      "hue": 357,
+      "sat": 91,
+      "light": 58
+    },
+    "missed_word_scar": {
+      "hue": 60,
+      "sat": 51,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 15,
+      "sat": 46,
+      "light": 56
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

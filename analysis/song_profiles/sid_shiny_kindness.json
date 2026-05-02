@@ -1,0 +1,58 @@
+{
+  "reader": "sid",
+  "song_title": "Shiny kindness",
+  "artist": "Helen Sun",
+  "genre_tags": [
+    "indietronica",
+    "trip-hop",
+    "alt-pop"
+  ],
+  "song_features": {
+    "bpm": 112.3,
+    "key": "D#",
+    "mode": "major",
+    "energy": 0.49,
+    "valence": 0.52,
+    "duration_sec": 133.14
+  },
+  "derivation": {
+    "genre_cluster": "muted_warm",
+    "keyword_counts": {
+      "warm": 6,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 20
+    },
+    "bridge_meta": null
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 40,
+        "sat": 46,
+        "light": 57
+      },
+      "accent": {
+        "hue": 351,
+        "sat": 71,
+        "light": 69
+      }
+    },
+    "palette_drift_range": 45.9,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.872,
+    "motion_smear_decay": 0.931,
+    "panic_palette": {
+      "hue": 352,
+      "sat": 80,
+      "light": 64
+    },
+    "missed_word_scar": {
+      "hue": 40,
+      "sat": 36,
+      "light": 14
+    },
+    "bridge_palette": null,
+    "bridge_trigger": null
+  }
+}

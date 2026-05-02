@@ -1,0 +1,74 @@
+{
+  "reader": "sid2",
+  "song_title": "Docket",
+  "artist": "Blondshell",
+  "genre_tags": [
+    "indie-rock",
+    "alt-rock",
+    "grunge-pop"
+  ],
+  "song_features": {
+    "bpm": 107.7,
+    "key": "B",
+    "mode": "major",
+    "energy": 0.54,
+    "valence": 0.499,
+    "duration_sec": 211.14
+  },
+  "derivation": {
+    "genre_cluster": "bruised_alt",
+    "keyword_counts": {
+      "warm": 2,
+      "cool": 0,
+      "sharp": 10,
+      "dissociative": 1
+    },
+    "bridge_meta": {
+      "label": "iv_chord_shift",
+      "section": {
+        "start_sec": 69.03,
+        "end_sec": 105.14,
+        "duration_sec": 36.11,
+        "key": "E",
+        "mode": "major",
+        "key_confidence": 0.684,
+        "rms": 0.2851,
+        "spectral_centroid_hz": 1646.9
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 346,
+        "sat": 77,
+        "light": 49
+      },
+      "accent": {
+        "hue": 342,
+        "sat": 95,
+        "light": 61
+      }
+    },
+    "palette_drift_range": 49.7,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.795,
+    "motion_smear_decay": 0.878,
+    "panic_palette": {
+      "hue": 345,
+      "sat": 99,
+      "light": 56
+    },
+    "missed_word_scar": {
+      "hue": 346,
+      "sat": 67,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 286,
+      "sat": 57,
+      "light": 59
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}
