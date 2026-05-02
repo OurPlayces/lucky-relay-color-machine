@@ -43,7 +43,7 @@ def extract_overall(y, sr):
     mean_loudness_db = float(np.mean(rms_db))
     dynamic_range_db = float(np.max(rms_db) - np.min(rms_db))
 
-    chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+    chroma = librosa.feature.chroma_cqt(y=y, sr=sr, tuning=0.0)
     chroma_mean = chroma.mean(axis=1)
     key, mode, key_conf = detect_key(chroma_mean)
 
@@ -76,7 +76,7 @@ def extract_overall(y, sr):
 
 def extract_sections(y, sr, k=10, min_seg_sec=2.0):
     """Per-section key/mode/RMS/brightness."""
-    chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+    chroma = librosa.feature.chroma_cqt(y=y, sr=sr, tuning=0.0)
     boundaries = librosa.segment.agglomerative(chroma, k=k)
     times = librosa.frames_to_time(boundaries, sr=sr).tolist()
     duration = float(librosa.get_duration(y=y, sr=sr))
@@ -91,7 +91,7 @@ def extract_sections(y, sr, k=10, min_seg_sec=2.0):
         seg = y[s0:s1]
         if len(seg) < sr // 2:
             continue
-        seg_chroma = librosa.feature.chroma_cqt(y=seg, sr=sr).mean(axis=1)
+        seg_chroma = librosa.feature.chroma_cqt(y=seg, sr=sr, tuning=0.0).mean(axis=1)
         k_, m_, conf_ = detect_key(seg_chroma)
         rms = float(np.mean(librosa.feature.rms(y=seg)[0]))
         centroid = float(np.mean(librosa.feature.spectral_centroid(y=seg, sr=sr)[0]))

@@ -1,0 +1,74 @@
+{
+  "reader": "wan_qin",
+  "song_title": "HAPPEN (\ud5e4\ud508 \uc6b0\uc5f0)",
+  "artist": "Heize",
+  "genre_tags": [
+    "r&b",
+    "alt-pop",
+    "dream-pop"
+  ],
+  "song_features": {
+    "bpm": 112.3,
+    "key": "A",
+    "mode": "minor",
+    "energy": 0.529,
+    "valence": 0.388,
+    "duration_sec": 197.83
+  },
+  "derivation": {
+    "genre_cluster": "muted_warm",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "v_chord_shift",
+      "section": {
+        "start_sec": 3.81,
+        "end_sec": 20.5,
+        "duration_sec": 16.69,
+        "key": "E",
+        "mode": "minor",
+        "key_confidence": 0.745,
+        "rms": 0.1318,
+        "spectral_centroid_hz": 2784.0
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 333,
+        "sat": 55,
+        "light": 52
+      },
+      "accent": {
+        "hue": 331,
+        "sat": 80,
+        "light": 64
+      }
+    },
+    "palette_drift_range": 50.4,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.872,
+    "motion_smear_decay": 0.929,
+    "panic_palette": {
+      "hue": 335,
+      "sat": 85,
+      "light": 59
+    },
+    "missed_word_scar": {
+      "hue": 333,
+      "sat": 45,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 288,
+      "sat": 40,
+      "light": 57
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

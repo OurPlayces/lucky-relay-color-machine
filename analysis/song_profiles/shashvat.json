@@ -1,0 +1,73 @@
+{
+  "reader": "shashvat",
+  "song_title": "Banjo",
+  "artist": "Rascal Flatts",
+  "genre_tags": [
+    "country",
+    "americana"
+  ],
+  "song_features": {
+    "bpm": 103.4,
+    "key": "D",
+    "mode": "major",
+    "energy": 0.519,
+    "valence": 0.529,
+    "duration_sec": 296.38
+  },
+  "derivation": {
+    "genre_cluster": "earthy",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "mode_flip_to_minor",
+      "section": {
+        "start_sec": 208.14,
+        "end_sec": 274.48,
+        "duration_sec": 66.34,
+        "key": "D",
+        "mode": "minor",
+        "key_confidence": 0.807,
+        "rms": 0.1133,
+        "spectral_centroid_hz": 2562.2
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 49,
+        "sat": 46,
+        "light": 48
+      },
+      "accent": {
+        "hue": 354,
+        "sat": 71,
+        "light": 60
+      }
+    },
+    "palette_drift_range": 50.8,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.723,
+    "motion_smear_decay": 0.929,
+    "panic_palette": {
+      "hue": 355,
+      "sat": 80,
+      "light": 55
+    },
+    "missed_word_scar": {
+      "hue": 49,
+      "sat": 36,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 309,
+      "sat": 31,
+      "light": 43
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "reader": "gena",
+  "song_title": "B\u014dky\u014d",
+  "artist": "Hako Yamasaki",
+  "genre_tags": [
+    "folk",
+    "acoustic"
+  ],
+  "song_features": {
+    "bpm": 161.5,
+    "key": "G",
+    "mode": "minor",
+    "energy": 0.678,
+    "valence": 0.442,
+    "duration_sec": 257.65
+  },
+  "derivation": {
+    "genre_cluster": "earthy",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "mode_flip_to_minor",
+      "section": {
+        "start_sec": 190.17,
+        "end_sec": 254.58,
+        "duration_sec": 64.41,
+        "key": "G",
+        "mode": "major",
+        "key_confidence": 0.827,
+        "rms": 0.1996,
+        "spectral_centroid_hz": 1891.5
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 131,
+        "sat": 44,
+        "light": 49
+      },
+      "accent": {
+        "hue": 18,
+        "sat": 70,
+        "light": 61
+      }
+    },
+    "palette_drift_range": 47.7,
+    "brightness_curve": "explosive",
+    "pulse_rate_hz": 1.346,
+    "motion_smear_decay": 0.921,
+    "panic_palette": {
+      "hue": 15,
+      "sat": 80,
+      "light": 56
+    },
+    "missed_word_scar": {
+      "hue": 131,
+      "sat": 34,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 31,
+      "sat": 29,
+      "light": 44
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

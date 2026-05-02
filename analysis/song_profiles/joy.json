@@ -1,0 +1,72 @@
+{
+  "reader": "joy",
+  "song_title": "A Walk to Remember",
+  "artist": "Vulfpeck",
+  "genre_tags": [
+    "indie-rock"
+  ],
+  "song_features": {
+    "bpm": 143.6,
+    "key": "G",
+    "mode": "major",
+    "energy": 0.679,
+    "valence": 0.553,
+    "duration_sec": 309.82
+  },
+  "derivation": {
+    "genre_cluster": "bruised_alt",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "mode_flip_to_minor",
+      "section": {
+        "start_sec": 85.08,
+        "end_sec": 179.05,
+        "duration_sec": 93.97,
+        "key": "D",
+        "mode": "minor",
+        "key_confidence": 0.301,
+        "rms": 0.2374,
+        "spectral_centroid_hz": 2062.4
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 287,
+        "sat": 71,
+        "light": 49
+      },
+      "accent": {
+        "hue": 317,
+        "sat": 95,
+        "light": 61
+      }
+    },
+    "palette_drift_range": 52.5,
+    "brightness_curve": "explosive",
+    "pulse_rate_hz": 1.197,
+    "motion_smear_decay": 0.871,
+    "panic_palette": {
+      "hue": 323,
+      "sat": 99,
+      "light": 56
+    },
+    "missed_word_scar": {
+      "hue": 287,
+      "sat": 61,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 187,
+      "sat": 56,
+      "light": 44
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

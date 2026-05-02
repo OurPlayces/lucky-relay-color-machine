@@ -1,0 +1,58 @@
+{
+  "reader": "damien",
+  "song_title": "I Should've Known",
+  "artist": "INOHA",
+  "genre_tags": [
+    "indie-rock",
+    "alt-rock",
+    "bedroom-pop"
+  ],
+  "song_features": {
+    "bpm": 112.3,
+    "key": "D#",
+    "mode": "major",
+    "energy": 0.495,
+    "valence": 0.545,
+    "duration_sec": 209.98
+  },
+  "derivation": {
+    "genre_cluster": "bruised_alt",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": null
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 35,
+        "sat": 71,
+        "light": 48
+      },
+      "accent": {
+        "hue": 350,
+        "sat": 95,
+        "light": 60
+      }
+    },
+    "palette_drift_range": 46.4,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.872,
+    "motion_smear_decay": 0.88,
+    "panic_palette": {
+      "hue": 352,
+      "sat": 99,
+      "light": 55
+    },
+    "missed_word_scar": {
+      "hue": 35,
+      "sat": 61,
+      "light": 14
+    },
+    "bridge_palette": null,
+    "bridge_trigger": null
+  }
+}

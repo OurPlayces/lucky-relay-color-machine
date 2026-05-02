@@ -1,0 +1,72 @@
+{
+  "reader": "chris",
+  "song_title": "Not Alone (NDP 2024 Theme Song)",
+  "artist": "Benjamin Kheng",
+  "genre_tags": [
+    "alt-pop"
+  ],
+  "song_features": {
+    "bpm": 99.4,
+    "key": "A",
+    "mode": "major",
+    "energy": 0.492,
+    "valence": 0.507,
+    "duration_sec": 211.21
+  },
+  "derivation": {
+    "genre_cluster": "muted_warm",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 1,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "iv_chord_shift",
+      "section": {
+        "start_sec": 0.0,
+        "end_sec": 68.06,
+        "duration_sec": 68.06,
+        "key": "D",
+        "mode": "major",
+        "key_confidence": 0.975,
+        "rms": 0.0699,
+        "spectral_centroid_hz": 1901.8
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 324,
+        "sat": 58,
+        "light": 52
+      },
+      "accent": {
+        "hue": 328,
+        "sat": 83,
+        "light": 64
+      }
+    },
+    "palette_drift_range": 52.8,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.657,
+    "motion_smear_decay": 0.93,
+    "panic_palette": {
+      "hue": 333,
+      "sat": 88,
+      "light": 59
+    },
+    "missed_word_scar": {
+      "hue": 324,
+      "sat": 48,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 264,
+      "sat": 38,
+      "light": 62
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

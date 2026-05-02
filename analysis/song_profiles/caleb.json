@@ -1,0 +1,72 @@
+{
+  "reader": "caleb",
+  "song_title": "Red Wine Supernova",
+  "artist": "Chappell Roan",
+  "genre_tags": [
+    "alt-pop"
+  ],
+  "song_features": {
+    "bpm": 123.0,
+    "key": "A",
+    "mode": "major",
+    "energy": 0.608,
+    "valence": 0.59,
+    "duration_sec": 192.82
+  },
+  "derivation": {
+    "genre_cluster": "muted_warm",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "rms_drop_only",
+      "section": {
+        "start_sec": 170.76,
+        "end_sec": 192.82,
+        "duration_sec": 22.06,
+        "key": "A",
+        "mode": "major",
+        "key_confidence": 0.981,
+        "rms": 0.2274,
+        "spectral_centroid_hz": 3132.6
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 333,
+        "sat": 60,
+        "light": 54
+      },
+      "accent": {
+        "hue": 331,
+        "sat": 85,
+        "light": 66
+      }
+    },
+    "palette_drift_range": 50.7,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 2.05,
+    "motion_smear_decay": 0.925,
+    "panic_palette": {
+      "hue": 335,
+      "sat": 90,
+      "light": 61
+    },
+    "missed_word_scar": {
+      "hue": 333,
+      "sat": 50,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 293,
+      "sat": 45,
+      "light": 54
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}

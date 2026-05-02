@@ -1,0 +1,74 @@
+{
+  "reader": "serene",
+  "song_title": "I Lived",
+  "artist": "OneRepublic",
+  "genre_tags": [
+    "alt-pop",
+    "indie-rock",
+    "alt-rock"
+  ],
+  "song_features": {
+    "bpm": 117.5,
+    "key": "A",
+    "mode": "major",
+    "energy": 0.568,
+    "valence": 0.551,
+    "duration_sec": 234.71
+  },
+  "derivation": {
+    "genre_cluster": "bruised_alt",
+    "keyword_counts": {
+      "warm": 0,
+      "cool": 0,
+      "sharp": 0,
+      "dissociative": 0
+    },
+    "bridge_meta": {
+      "label": "rms_drop_only",
+      "section": {
+        "start_sec": 13.1,
+        "end_sec": 38.1,
+        "duration_sec": 25.0,
+        "key": "A",
+        "mode": "major",
+        "key_confidence": 0.69,
+        "rms": 0.0955,
+        "spectral_centroid_hz": 2260.0
+      }
+    }
+  },
+  "knobs": {
+    "base_palette": {
+      "primary": {
+        "hue": 314,
+        "sat": 71,
+        "light": 48
+      },
+      "accent": {
+        "hue": 325,
+        "sat": 95,
+        "light": 60
+      }
+    },
+    "palette_drift_range": 51.2,
+    "brightness_curve": "linear",
+    "pulse_rate_hz": 1.958,
+    "motion_smear_decay": 0.877,
+    "panic_palette": {
+      "hue": 330,
+      "sat": 99,
+      "light": 55
+    },
+    "missed_word_scar": {
+      "hue": 314,
+      "sat": 61,
+      "light": 14
+    },
+    "bridge_palette": {
+      "hue": 274,
+      "sat": 56,
+      "light": 48
+    },
+    "bridge_trigger": "sustained-quiet"
+  }
+}
